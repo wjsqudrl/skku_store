@@ -1,7 +1,7 @@
 <template>
     <div v-if="authorProfile">
         <avatar :userProfile="authorProfile" :size="size"></avatar>
-        <avatar-upload v-show="isAuthor" :authorProfile="authorProfile" @renewAuthorProfile="renewAuthorProfile"></avatar-upload>
+        <avatar-upload v-show="isAuthor&&siteCheck" :authorProfile="authorProfile" @renewAuthorProfile="renewAuthorProfile"></avatar-upload>
         <div>
             {{ authorProfile.data().displayName }}
             <font-awesome-icon v-if="authorProfile.data().isArtist" :icon="{ prefix: 'fas', iconName: icon }" :style="{ color: color }" size="xs"/>
@@ -26,6 +26,9 @@ export default {
         },
         color(){
             return this.authorProfile.data().gender === 'female' ? 'pink' : '#00AAFF'
+        },
+        siteCheck(){
+            return this.$route.name==="artist" ? false : true
         }
     },
     components:{

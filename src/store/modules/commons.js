@@ -7,6 +7,7 @@ const state = {
     bottomOfWindow:false,
     showTopSheet:false,
     currentUser: '', // 현재 로그인한 유저(currentUser)
+    token:'',
     userProfile: '', // 현재 로그인한 유저의 프로필 정보(userProfile)
     arts: [],
     artsItems: [],
@@ -32,6 +33,7 @@ const state = {
     },
     globalSearch:'',
     eventImg:'',
+    mainjs:'',
 }
 
 const getters = {
@@ -44,6 +46,9 @@ const getters = {
     //init
     getCurrentUser(state) {
         return state.currentUser
+    },
+    getToken(state) {
+        return state.token
     },
     getUserProfile(state) {
         return state.userProfile
@@ -125,6 +130,20 @@ const mutations = {
             state.currentUser = null
         }
     },
+    setToken(state, fetchedData) {
+        console.log('setTOken')
+        if (fetchedData) {
+            state.token = fetchedData
+        } else {
+            state.token = ''
+        }
+    },
+    mainJSstart(state, fetchedData) {
+        console.log('mainJSstart')
+    },
+    mainJSend(state, fetchedData) {
+        console.log('mainJSend')
+    },
     setUserProfile(state, fetchedData) {
         state.userProfile = fetchedData
     },
@@ -162,6 +181,7 @@ const mutations = {
     },
     changeNavBtnDisabled(state, fetchedData){
         console.log('navBtnDisabled changed')
+        
         // console.log(state.navBtnDisabled)
         state.navBtnDisabled = !state.navBtnDisabled
     },

@@ -7,6 +7,7 @@ import snackBar from '../../components/snackBar'
 import firebase from 'firebase/app'
 import { mapGetters, mapActions } from 'vuex'
 import { Plugins, registerWebPlugin} from '@capacitor/core';
+import {dbUpdate} from '../../firebase'
 import { FacebookLogin } from "@rdlabo/capacitor-facebook-login"
 
 export default {
@@ -16,6 +17,7 @@ export default {
     computed: {
         ...mapGetters({
             userProfile: 'getUserProfile',
+            token: 'getToken',
         }),
     },
     methods: {
@@ -28,6 +30,8 @@ export default {
     },
     async mounted(){
         this.$store.commit('changeNavBtnDisabled')
+        // this.$store.commit('setToken')
+        console.log(this.token)
         if(this.userProfile.data().signInMethod==="facebook"){
             await Plugins.FacebookLogin.logout();
             await firebase.auth().signOut()
@@ -35,9 +39,17 @@ export default {
             await Plugins.GoogleAuth.signOut()
             await firebase.auth().signOut()
         }else{
+            var uid = firebase.auth().currentUser.uid
+            console.log(this.token)
+            console.log("token remove")
+            var input = {
+                token: firebase.firestore.FieldValue.arrayRemove(this.token),
+            }
+            await dbUpdate('userProfiles', uid, input)
             await firebase.auth().signOut()
         }
         this.$store.commit('changeNavBtnDisabled')
+        // this.$store.commit('setToken')
     },
     data() {
         return {

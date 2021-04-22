@@ -78,7 +78,8 @@ export default {
     },
     ...mapGetters({
     userProfile: 'getUserProfile',
-    text: 'getText'
+    text: 'getText',
+    token: 'getToken',
     }),
     items1() {      
       return [
@@ -140,6 +141,7 @@ export default {
   async created(){
     await bus.$emit('start:spinner')
     this.info = await Device.getInfo()
+    console.log(this.token)
     
   },
   async mounted(){

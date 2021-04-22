@@ -21,6 +21,7 @@
           <v-col v-for="review in reviewsDocsToArray.slice(0,1)" :key="review.id" cols="12">
             <review-card :review="review"></review-card>
           </v-col>
+          
           <v-bottom-sheet v-model="showDialog" max-width="calc(100% - 0px)" scrollable inset>
             <v-card style="border-top-left-radius:30px; border-top-right-radius:30px; background-color:black;">
                 <v-divider style="border-color:#707070; color:#707070;"></v-divider>

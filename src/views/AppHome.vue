@@ -1,183 +1,54 @@
 <template>
   <div>
     <appbar :noshow="true"></appbar>
-    <pull-to
-    style="padding:0px;margin:0px"
-    :is-touch-sensitive="isTouchSensitive"
-    :top-load-method="refresh"
-    :bottom-load-method="bottomLoad"
-    @top-state-change="stateChange"
-    :topConfig="{ pullText:'', triggerText:'', loadingText:'', doneText:'' }">
-      <template v-if="circleShow" slot="top-block">
-        <v-row align="center" justify="center">
-          <v-col align="center" justify="center">
-            <v-progress-circular
-                style="z-index:9999"
-                :indeterminate="true"
-                :rotate="4"
-                :size="28"
-                :value="0"
-                :width="4"
-                dark
-                >
-            </v-progress-circular>
-          </v-col>
-        </v-row>
-      </template>
-      <v-container style="padding:0px;margin:0px;">
-        <v-row>
-          
-          <v-col cols="12" style="padding:0px 0px 0px 0px;" class="black">
-            <v-col :height="winHeight / 7 * 3" class="black">
-              <topItemsHome v-if="show"></topItemsHome>
-            </v-col>
-          </v-col>
+    <v-row>
 
-          <!-- 카테고리 -->
-          <!-- <v-col cols="12" style="padding:0px 0px 0px 0px;" class="black">
-            <artSwipeCategory :num="0.5">
-            </artSwipeCategory>
-          </v-col> -->
+      <v-col cols="12" style="padding:0px 0px 0px 0px;" class="black">
+        <v-col :height="winHeight / 7 * 3" class="black">
+          <topItemsHome v-if="show"></topItemsHome>
+        </v-col>
+      </v-col>
 
-          <!-- <v-col cols="12" class="black">
-            <v-sheet height="40px" class="black"></v-sheet>
-          </v-col> -->
-
-          <!-- 최신작품 -->
-          <v-col cols="12" style="padding:0px 0px 0px 0px;" class="black">
-            <artSwipeNew v-if="show" :num="2.6">
-            </artSwipeNew>
-          </v-col>
-
-          <v-col cols="12" class="black">
-            <v-sheet height="30px" class="black"></v-sheet>
-          </v-col>
-
-          <!-- 트렌디 타투 -->
-          <!-- <v-col cols="12" style="padding:0px 0px 0px 0px;" class="black">
-            <artSwipeNewArtist v-if="show" :num="2.6">
-            </artSwipeNewArtist>
-          </v-col> -->
-
-          <!-- <v-col cols="12" class="black">
-            <v-sheet height="10px" class="black"></v-sheet>
-          </v-col> -->
-
-          <!-- <v-col cols="12" style="padding:0px 0px 0px 0px;" class="black">
-            <artSwipeSearch :num="0.8">
-            </artSwipeSearch>
-          </v-col> -->
-        
-          <!-- <div v-if="eventArtistShow">
-            <event-artist :eventImg="eventImg" :eventArtistShow="eventArtistShow"></event-artist>
-          </div> -->
-
-        </v-row>
-      </v-container>
-    </pull-to>
+      <v-col cols="12" v-show="this.userProfile ? this.userProfile.data().latLng ? true : false :false">
+        <card-list-small :arts="favoritesDocsToArray"></card-list-small>
+      </v-col>
+      
+    </v-row>
   </div>
 </template>
 
 <script>
-import PullTo from 'vue-pull-to'
 import appbar from '../components/appbar'
 import topItemsHome from '../components/topItemsHome'
-import artSwipeNew from '../components/artSwipeNew'
-import eventArtist from '../components/eventArtist'
-import { dbRead, dbQuery, appContents, dbUpdate} from '../firebase'
+import { dbRead, dbQuery, appContents, dbUpdate } from '../firebase'
+import firebase from 'firebase/app'
 import { mapMutations, mapActions, mapGetters } from 'vuex'
 import bus from '../utils/bus'
-
+import cardListSmall from '../components/cardListSmall'
+// import '../store/modules/messaging.js'
+import 'firebase/messaging'
 
 export default {
   name:'home',
   components: {
     appbar,
     topItemsHome,
-    artSwipeNew,
-    eventArtist,
-    PullTo
+    cardListSmall,
   },
   computed: {
     ...mapGetters({
-      top: 'getTop',
-      prevTop: 'getPrevTop',
       currentUser: 'getCurrentUser',
       userProfile: 'getUserProfile',
-      arts: 'getArts', // commons.js
-      img: 'getImg',
-      css: 'getCss',
-      // 좋아요 관련 변수
       favoritesDocsToArray: 'getFavoritesDocsToArray', //favorite.js
-      eventImg: 'getEventImg',
-      showEvent: 'getShowEvent',
-      artsItems: 'getArtsItems'
     }),
-    eventArtistShow(){
-      let a = this.userProfile ? this.userProfile.data().isArtist && (this.userProfile.data().eventPopupOn || this.userProfile.data().eventPopupOn === undefined) : false
-      return a
-
-    }
   },
   data() {
     return {
-      circleShow:false,
-      isTouchSensitive:false,
-      timeout:'',
       show:true,
-      firstLoad2:true,
       winHeight:'',
-      allLoaded: false,
-      swiperOptionTop: {
-        slidesPerView: '1',
-        spaceBetween: 2,
-        effect: 'fade',
-        speed: 1000,
-        pagination: {
-          el: '.swiper-pagination',
-          clickable: true,
-          dynamicBullets: true
-        },
-      },
-      swiperOption: {
-        slidesPerView: '1',
-        centeredSlides: false,
-        effect: 'fade',
-        spaceBetween: 2,
-        speed: 1000,
-        pagination: {
-            el: '.swiper-pagination',
-            clickable: true,
-            dynamicBullets: true
-        }
-      },
-      swiperOptionItem: {
-        slidesPerView: '5',
-        spaceBetween: 2,
-        effect: 'fade',
-        speed: 1000,
-        pagination: {
-          el: '.swiper-pagination',
-          clickable: true,
-          dynamicBullets: true
-        },
-      },
-
-
     }
   },
   watch:{
-    top(){
-      if(this.$route.name === 'home'){
-      if(this.top === 0){
-        this.isTouchSensitive = true
-      }
-      else{
-        this.isTouchSensitive = false
-      }
-
-      }
-    }
 
   },
   async created(){
@@ -185,102 +56,99 @@ export default {
     await bus.$emit('start:spinner')
     this.winHeight =  window.innerHeight || document.body.clientHeight
 
-    if(!this.userProfile){
-      alert('userProfile no')
-      this.fetchUserProfile()
-    }
-
-
-    if(!this.artsItems){
-      alert('artsItems no')
-      this.fetchArts()
-    }
+    
 
   },
-  async mounted(){
-    // alert('start')
-    if(this.currentUser){
-      if(this.favoritesDocsToArray.length === 0){
-        await this.fetchFavoritesDocsToArray(this.currentUser.uid)
+  async activated(){
+    let a = this.userProfile.data().latLng
+    let b = this.userProfile.data().phoneNum
+    console.log(a)
+    // console.log(b)
+    console.log(typeof(a)==="undefined")
+    // this.fetchUserProfile()
+    if(typeof(a)==="undefined"||typeof(b)==="undefined"||b===""){//위치설정 안함
+      await alert("업체의 위치와 번호를 설정해주세요")
+    }else{//위치설정함
+      if(this.currentUser){//로그인
+        if(this.favoritesDocsToArray.length === 0){//업을시
+          await this.fetchFavoritesDocsToArray(this.currentUser.uid)
+        }
       }
     }
     
-    // event popup 관련 로직
-    if(this.eventImg === ''){
-      await this.$store.dispatch('fetchEventImg')
+  },
+  async mounted(){
+    let messaging = firebase.messaging.isSupported() ? firebase.messaging() : null
+    // alert("로그인")
+    if (firebase.messaging.isSupported()){
+        messaging.usePublicVapidKey(process.env.VUE_APP_FIREBASE_PUSH_KEY)
     }
+    if (firebase.messaging.isSupported()) {
+        // // TODO: Send token to server for send notification
+        // Get Instance ID token. Initially this makes a network call, once retrieved
+        // subsequent calls to getToken will return from cache.
+        messaging.getToken().then((currentToken) => {
+            if (currentToken) {
+                console.log(currentToken)
+                // context.commit('setToken')
+                this.$store.commit('setToken', currentToken)
+                this.$store.commit('mainJSstart')
+                var uid = firebase.auth().currentUser.uid
+                console.log(uid)
+                console.log("token Update")
+                var input = {
+                    token: firebase.firestore.FieldValue.arrayUnion(currentToken),
+                }
+                dbUpdate('userProfiles', uid, input)
 
-    // if(this.eventImg.data().home.eventImg.customer !== ''){
-    //   this.eventArtistSheet = true
-    // }
-    
+            } else {
+                // Show permission request.
+                console.log('No Instance ID token available. Request permission to generate one.');
+                Notification.requestPermission()
+                    .then((permission) => {
+                        console.log('permission ', permission)
+                        if (permission !== 'granted') {
+                            alert('브라우저의 알림을 허용해주세요')
 
+                        }
+                    })
+            }
+        }).catch((err) => {
+            console.log('An error occurred while retrieving token. ', err);
+            Notification.requestPermission()
+                .then((permission) => {
+                    console.log('permission ', permission)
+                    if (permission !== 'granted') {
+                        alert('브라우저의 알림을 허용해주세요')
+
+                    }
+                })
+
+        });
+        // // // Handle received push notification at foreground
+        messaging.onMessage(payload => {
+            console.log("asdasdasd");
+            // alert("foreground")
+            const title = payload.notification.title;
+            const options = {
+                body: payload.notification.body,
+                icon: '/firebase-logo.png',
+            };
+            const notification = new Notification(title, options);
+            return notification;
+        })
+    }
     await bus.$emit('end:spinner')
     this.$store.commit('changeNavBtnDisabled')
-    // 
-    // alert('end')
-    // console.log(this.arts[0].data())
-    // displayName: a.data().displayName, thumbAvatar:a.data().thumbAvatar
+
   },
   methods:{
-
-      stateChange(state) {
-        if (state === 'trigger') {
-          this.circleShow = true
-        } else if (state === 'pull') {
-          this.circleShow = true
-        } else if (state === 'loading') {
-          this.circleShow = true
-        } else if (state === 'loaded-done') {
-          this.circleShow = false
-        }
-      },
-    bottomLoad(loaded){
-      this.circleShow = false
-      this.isTouchSensitive = false
-      loaded('done')
-    },
-    refresh(loaded) {
-       this.forceUpdate()
-       loaded('done')
-       this.isTouchSensitive = false
-      },
-    ...mapMutations({
-      changeShowTopSheet: 'changeShowTopSheet',
-    }),
-    async forceUpdate(){
-        console.log('forceupdate')
-        this.$store.commit('changeNavBtnDisabled')
-        
-        this.timeout = setTimeout(() => this.doForceUpdate(), 800);
-        this.$store.commit('changeNavBtnDisabled')
-    },
-    async doForceUpdate(){
-        await bus.$emit('start:spinner')
-        
-        if(this.$route.name === 'home'){
-          await this.fetchArts()
-          this.show = false
-           
-        }
-        // await this.fetchFavoritesDocsToArray()
-        await this.$forceUpdate();
-        this.changeShowTopSheet(false)
-        this.show = true
-        await bus.$emit('end:spinner')
-    },
     ...mapActions({
         fetchUserProfile: 'fetchUserProfile',
-        fetchArts: 'fetchArts', // commons.js
-        fetchImg: 'fetchImg',
-        fetchCss: 'fetchCss',
-        fetchText: 'fetchText',
         fetchFavoritesDocsToArray: 'fetchFavoritesDocsToArray', //favorite.js
       }),
-
   },
   
-
 }
 </script>
 

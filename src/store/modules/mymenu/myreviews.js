@@ -40,15 +40,10 @@ const actions = {
     async fetchReviewToMe(context, userId) {
         // console.log(userId)
         context.commit('changeNavBtnDisabled')
-        let querySnapshot1 = await dbQuery('arts', 'authorUid', '==', userId)
-        let items1 = []
-        querySnapshot1.forEach(doc=>{items1.push(doc.id)})
-        
         let items2 = []
-        for(var i in items1){
-            let querySnapshot2 = await dbQuery('reviews', 'artId', '==', items1[i])
-            querySnapshot2.forEach(doc=>{items2.unshift(doc);})
-        }
+        let querySnapshot2 = await dbQuery('reviews', 'storeUid', '==', userId)
+        querySnapshot2.forEach(doc=>{items2.unshift(doc);})
+
         context.commit('setReviewToMe', items2)
         context.commit('changeNavBtnDisabled')
     },

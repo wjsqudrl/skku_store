@@ -1,5 +1,3 @@
-//hyungjinko
-
 import Vue from 'vue';
 import VueRouter from 'vue-router'; 
 
@@ -19,26 +17,13 @@ import passwordReset from '../views/account/passwordReset'
 
 import SignUp1 from '../views/account/SignUp1.vue';
 import SignUp2 from '../views/account/SignUp2.vue';
-// import SignUp3 from '../views/account/SignUp3.vue';
 import SignUp4 from '../views/account/SignUp4.vue';
 import SignUp5 from '../views/account/SignUp5.vue';
 import SignUp6 from '../views/account/SignUp6.vue';
 
 // ../views/art/
-import AppArt from '../views/art/AppArt.vue'
-import AppArtWrite from '../views/art/AppArtWrite.vue'
-import AppArtWrite0 from '../views/art/AppArtWrite0.vue'
-import AppArtWrite1 from '../views/art/AppArtWrite1.vue'
-import AppArtWrite2 from '../views/art/AppArtWrite2.vue'
-import AppArtWrite3 from '../views/art/AppArtWrite3.vue'
-
-import AppReviewWrite from '../views/art/AppReviewWrite.vue'
 import AppReviewWrite0 from '../views/art/AppReviewWrite0.vue'
 import AppReview from '../views/art/AppReview.vue'
-
-
-// ../views/search/
-import AppBeforeSearch from '../views/search/AppBeforeSearch.vue'
 
 // ../views/mymenu/
 
@@ -47,15 +32,10 @@ import AppArtist from '../views/mymenu/AppArtist.vue'
 import AppCustomerService from '../views/mymenu/AppCustomerService'
 import AppFaq from '../views/mymenu/AppFaq'
 import AppNotice from '../views/mymenu/AppNotice'
-import AppLatest from '../views/mymenu/AppLatest.vue'
 import AppMyReviews from '../views/mymenu/AppMyReviews.vue'
 import AppReviewToMe from '../views/mymenu/AppReviewToMe.vue'
-import AppPhotoLibrary from '../views/mymenu/AppPhotoLibrary.vue'
 import AppSettings from '../views/mymenu/AppSettings.vue'
 import AppFollow from '../views/mymenu/AppFollow.vue'
-import instagram from '../components/instagram.vue'
-import artistWeb from '../components/artistWeb.vue'
-import categoryArt from '../components/categoryArt.vue'
 
 import { store }  from '../store/store'
 import firebase from 'firebase/app'
@@ -130,7 +110,6 @@ let loginEmailInfoCheck = async (to, from, next) => {
             var isArtist = userProfile.data().isArtist
             var displayName = userProfile.data().displayName
             if(isArtist === ''){ // isArtist 선택이 안 되어 있으면
-                router.push('/signup3')
             }else{ // 아티스트거나 고객이면
                 if(gender === null){ // isGender 선택이 안됐으면
                     router.push('signup4') // 성별
@@ -162,7 +141,6 @@ let changeNav = async (to, from, next) => {
     store.commit('setRouterHistory', to.fullPath)
     next()
 }
-
 
 export const router = new VueRouter({
     mode: 'history',
@@ -232,11 +210,6 @@ export const router = new VueRouter({
             component: SignUp2,
             beforeEnter: changeNav
         },
-        // {
-        //     path: '/signup3',
-        //     component: SignUp3,
-        //     beforeEnter: changeNav
-        // },
         {
             path: '/signup4',
             component: SignUp4,
@@ -252,51 +225,16 @@ export const router = new VueRouter({
             component: SignUp6,
             beforeEnter: changeNav
         },
-        // {
-        //     path: '/artwrite/:id',
-        //     component: AppArtWrite,
-        //     beforeEnter: loginEmailInfoCheck
-        // },
-        {
-            path: '/artwrite/:id',
-            component: AppArtWrite0,
-            beforeEnter: loginEmailInfoCheck,
-        },
-        {
-            path: '/artwrite1/:id',
-            component: AppArtWrite1,
-            beforeEnter: loginEmailInfoCheck,
-        },
-        {
-            path: '/artwrite2/:id',
-            component: AppArtWrite2,
-            beforeEnter: loginEmailInfoCheck,
-        },
-        {
-            path: '/artwrite3/:id',
-            component: AppArtWrite3,
-            beforeEnter: loginEmailInfoCheck,
-        },
         {
             path: '/artist/:id',
             component: AppArtist,
+            name: 'artist',
             beforeEnter: loginEmailInfoCheck
         },
         {
             path: '/accountsettings/:id',
             component: AppAccountSettings,
             beforeEnter: loginEmailInfoCheck
-        },
-        {
-            path: '/beforesearch/:value',
-            component: AppBeforeSearch,
-            beforeEnter: changeNav
-        },
-        {
-            path: '/art/:writeId',
-            name: 'art',
-            component: AppArt,
-            beforeEnter: changeNav
         },
         {
             path: '/customerservice',
@@ -319,12 +257,6 @@ export const router = new VueRouter({
             beforeEnter: loginEmailInfoCheck
         },
         {
-            path: '/latest/:id',
-            name:'latest',
-            component: AppLatest,
-            beforeEnter: loginEmailInfoCheck
-        },
-        {
             path: '/myreviews/:id',
             component: AppMyReviews,
             beforeEnter: loginEmailInfoCheck
@@ -332,11 +264,6 @@ export const router = new VueRouter({
         {
             path: '/reviewtome/:id',
             component: AppReviewToMe,
-            beforeEnter: loginEmailInfoCheck
-        },
-        {
-            path: '/photolibrary',
-            component: AppPhotoLibrary,
             beforeEnter: loginEmailInfoCheck
         },
         {
@@ -360,25 +287,9 @@ export const router = new VueRouter({
             beforeEnter: changeNav
         },
         {
-            path: '/instagram',
-            component: instagram,
-            beforeEnter: changeNav
-        },
-        {
-            path: '/artistweb',
-            component: artistWeb,
-            beforeEnter: loginEmailInfoCheck
-        },
-        {
             path: '/passwordReset',
             component: passwordReset,
         }, 
-        {
-            path: '/categoryArt/:category',
-            name: 'categoryart',
-            component: categoryArt,
-            beforeEnter: loginEmailInfoCheck
-        },
 
     ],
     scrollBehavior(to, from, savedPosition) {

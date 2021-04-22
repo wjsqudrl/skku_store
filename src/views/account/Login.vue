@@ -60,6 +60,7 @@ import { mapGetters, mapMutations, mapActions } from 'vuex'
 import firebase from 'firebase/app'
 import bus from '../../utils/bus';
 import kakaoLogin from '../../components/kakaoLogin'
+import { dbRead, dbQuery, appContents, dbUpdate} from '../../firebase'
 
 export default {
   components: {
@@ -69,15 +70,7 @@ export default {
     kakaoLogin
   },
   async mounted(){
-    // let result = await firebase.auth().getRedirectResult()
-    // console.log('getRedirectResult')
-    // console.log(result)
-    // if (result.credential) { // 로그인한 상태
-    //   alert('로그인 된 상태')
-    // }
-    // else{ // 로그인을 안한 상태
-    //   alert('로그인 안한 상태')
-    // }
+
      
   },
     data() {
@@ -119,7 +112,19 @@ export default {
         await bus.$emit('start:spinner')
         try{
           var res = await firebase.auth().signInWithEmailAndPassword(this.email, this.password)
-    
+          var user = await firebase.auth().currentUser
+          
+          var userInfo = await dbRead("userProfiles",user.uid)
+          if(!userInfo.data().isArtist){
+            this.disabled = false
+            await bus.$emit('end:spinner')
+            alert("해당 계정은 손님용 계정이오니 새로 가입해주세요")
+            await firebase.auth().signOut()
+            await this.$store.commit('changeNavBtnDisabled')
+            return
+            // throw new Error("이미 손님용 계정으로 가입되어 있으니 새로 가입해주세요")
+          }
+          console.log(userInfo.data().isArtist)
           await this.fetchUserProfile(this) // this.userProfile 값을 초기화  // commons.js
           await this.fetchArts() // commons.js 
           await bus.$emit('end:spinner')
@@ -131,7 +136,7 @@ export default {
           alert("아이디 또는 비밀번호가 잘못되었습니다")
            
         }
-      this.$store.commit('changeNavBtnDisabled')
+        this.$store.commit('changeNavBtnDisabled')
       },
     }
 }

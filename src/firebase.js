@@ -1,10 +1,11 @@
 import Vue from 'vue'
 import { initializeApp } from 'firebase';
 import { store } from './store/store.js'
+// 추가
+import firebase from 'firebase/app'
+import 'firebase/messaging'
 
-
-// Your web app's Firebase configuration
-const app = initializeApp({
+const firebaseConfig ={
   apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
   authDomain: process.env.VUE_APP_FIREBASE_AUTH_DOMAIN,
   databaseURL: process.env.VUE_APP_FIREBASE_DATABASE_URL,
@@ -12,12 +13,15 @@ const app = initializeApp({
   storageBucket: process.env.VUE_APP_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.VUE_APP_FIREBASE_MESSAGE_SENDER_ID,
   appId: process.env.VUE_APP_FIREBASE_APP_ID
-});
+}
+
+// Your web app's Firebase configuration
+const app = initializeApp(firebaseConfig);
 
 Vue.prototype.$db = app.firestore()
 
 Vue.prototype.$storage = app.storage().ref()
-
+// 추가
 export const db = app.firestore();
 export const arts = db.collection('arts');
 export const userProfiles = db.collection('userProfiles');
@@ -28,7 +32,7 @@ export const appContents = db.collection('app');
 export const storage = app.storage();
 export const reviews = db.collection('reviews');
 export const favorites = db.collection('favorites');
-
+export const ask = db.collection("ask");
 export async function dbRead(colName,docId) {
   console.log('dbRead')
   if(!docId){ // docId 입력 안됐으면, collection의 docsArray들을 받아옴

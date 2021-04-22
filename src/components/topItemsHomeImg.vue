@@ -1,5 +1,5 @@
 <template>
-        <v-img class="grey darken-4" :src="item.url" style="width:screen.width;margin-bottom:0px;">
+        <v-img class="grey darken-4" height="190px" :src="item.url" style="width:screen.width;margin-bottom:0px;">
         </v-img>
 </template>
 

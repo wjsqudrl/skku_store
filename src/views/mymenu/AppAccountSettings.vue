@@ -384,8 +384,9 @@ export default {
   },
   methods: {
     async updateLatLng(center){
+      console.log("없데이트")
       await dbUpdate('userProfiles', this.userProfile.id, {latLng: center})
-      await this.fetchUserProfile(this)
+      await this.fetchUserProfile()
     },
     clickBtn(){
       this.disabled = true
@@ -404,7 +405,7 @@ export default {
         let input = {pushAlarm: payload.value}
         await dbUpdate('userProfiles', this.userProfile.id, input)
       }
-      this.fetchUserProfile(this)
+      this.fetchUserProfile()
     },
     ...mapActions({
       fetchUserProfile: 'fetchUserProfile', // commons.js
@@ -468,7 +469,7 @@ export default {
       await bus.$emit('end:spinner')
        
       // this.disabled = false
-      this.fetchUserProfile(this)
+      this.fetchUserProfile()
       this.snackbar = true
       this.$store.commit('changeNavBtnDisabled')
     },

@@ -1,5 +1,14 @@
 {
   "projects": {
-    "default": "tattooup"
+    "default": "skku-graduation-project-9dd6a"
+  },
+  "targets": {
+    "skku-graduation-project-9dd6a": {
+      "hosting": {
+        "store": [
+          "skku-store"
+        ]
+      }
+    }
   }
 }

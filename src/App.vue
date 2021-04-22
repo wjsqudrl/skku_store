@@ -1,5 +1,16 @@
 <template>
   <v-app>
+    <v-scroll-x-transition>
+      <!-- :timeout="5000" -->
+        <v-snackbar
+        top
+        :timeout="0"
+        v-model="snackbarUpper"
+        :vertical="true"
+        color="success">
+        <!-- {{token}} -->
+        </v-snackbar>
+    </v-scroll-x-transition>
     <v-content class="black">
       <v-container class="black">
           <keep-alive :include="keepList">
@@ -28,7 +39,7 @@
           <v-icon v-if="favoriteDisabled">favorite</v-icon>
           <v-icon v-else style="color:#969696;">favorite</v-icon>
           <div :style="favoriteDisabled ? 'font-size:12px; color:white' : 'font-size:12px; color:#969696;'">
-            진행중
+            견적발송
           </div>
         </v-col>
         <v-col @click="myMenuDisabled || $route.path === '/beforelogin' ? '' : $router.push('/mymenu')" align="center">
@@ -51,15 +62,12 @@
 
 <script>
 import PullTo from 'vue-pull-to'
-// import Vue from 'vue'
-// import router from './router/index'
-// Vue.$vueScrollBehavior(router)
 import { mapMutations, mapActions, mapGetters } from 'vuex'
 import spinner from './components/spinner.vue'
 import bus from './utils/bus.js'
 import firebase from 'firebase/app'
 import snackBar from './components/snackBar'
-import { dbRead } from './firebase';
+import { dbRead} from './firebase';
 
 export default {
   name:'app',
@@ -76,6 +84,8 @@ export default {
       isLogin: false,
       type:'exitApp',
       snackbar:false,
+      snackbarUpper:false,
+      
     }
   },
   computed: {
@@ -102,7 +112,8 @@ export default {
     },
     myMenuDisabled(){
       return this.$route.path === '/mymenu' || this.navBtnDisabled || this.$route.path.split('/')[1].includes('artwrite') || this.$route.path.split('/')[1].includes('reviewwrite')
-    }
+    },
+
   },
   methods: {
     
@@ -141,13 +152,15 @@ export default {
     this.$store.commit('changeNavBtnDisabled')
     await bus.$on('start:spinner', this.startSpinner)
     await bus.$on('start:exitAppAlarm', this.startExitAppAlarm)
+    if(!this.userProfile){
+      // alert('userProfile no')
+      this.fetchUserProfile()
+    }
+    // var user = await firebase.auth().currentUser;
     
-    var user = await firebase.auth().currentUser;
-    
-    await this.setCurrentUser(user)
-    await this.fetchImg()
-    await this.fetchCss()
-    await this.fetchText()
+    // await this.setCurrentUser(user)
+
+    console.log("app.vue")
   },
   async mounted(){
     

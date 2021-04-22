@@ -7,12 +7,12 @@
         
         <v-card-text style="padding-bottom:0px;">
             <v-row>
-                <v-col cols="2" align="right" justify="center" v-show="userAvatarUrl">
+                <v-col cols="2" align="right" justify="center" v-if="userAvatarUrl">
                     <v-avatar>
                         <v-img class="grey darken-4" :src="userAvatarUrl"></v-img>
                     </v-avatar>
                 </v-col>
-                <v-col cols="2" align="right" justify="center" v-show="!userAvatarUrl">
+                <v-col cols="2" align="right" justify="center" v-else>
                     <v-icon x-large>account_circle</v-icon>
                 </v-col>
                 

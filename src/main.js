@@ -49,14 +49,16 @@ Vue.use(VueAwesomeSwiper, /* { default global options } */)
 Vue.config.productionTip = false
 
 import firebase from 'firebase/app'
-
+import 'firebase/auth'
 let app = false
 firebase.auth().onAuthStateChanged(async user => {
-store.commit('changeNavBtnDisabled')
-if (!app) {
-    //wait to get user
+  console.log(user)
+  store.commit('changeNavBtnDisabled')
+  store.commit('mainJSstart')
+  if (!app) {
+      //wait to get user
     var user = await firebase.auth().currentUser;
-    
+    console.log(user)
     //start app
     app = new Vue({
       render: h => h(App),
@@ -64,7 +66,7 @@ if (!app) {
       router,
       store,
       async created(){
-        
+        console.log("main.js")
         await this.$store.commit('setCurrentUser', user)
         // await this.$store.dispatch('fetchArts')
       },
@@ -73,6 +75,7 @@ if (!app) {
       }
     }).$mount('#app')
   }
+  store.commit('mainJSend')
   store.commit('changeNavBtnDisabled')
 });
 

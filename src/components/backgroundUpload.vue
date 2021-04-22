@@ -4,7 +4,7 @@
         <file-upload
             :disabled="disabled"
             v-if="!authorProfile.data().userBackgroundUrl"
-            :custom-action="customAction"
+            :custom-action="customAction1"
             extensions="gif,jpg,jpeg,png,webp"
             accept="image/png,image/gif,image/jpeg,image/webp"
             :multiple="false"
@@ -48,8 +48,8 @@ export default {
             fetchUserProfile: 'fetchUserProfile',
         }),
         // image uploads 관련
-        async customAction(file, component){
-            console.log('customAction')
+        async customAction1(file, component){
+            console.log('customAction1',component)
              
             await bus.$emit('start:spinner')
             this.disabled = true
@@ -86,7 +86,7 @@ export default {
             }
         },
         inputFile(newFile, oldFile){ // inputFile이 들어오고 filtering 후 실행 됨
-            console.log('inputFile')
+            console.log('inputFile_background')
             this.$refs.upload.active = true // inputFile이 들어오면 upload 진행 시작 --> customAction실행
         },
         async deletedBackground(fileName, docId){

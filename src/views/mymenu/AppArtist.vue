@@ -17,34 +17,39 @@
           <v-col v-if="isAuthor" cols="12" justify="center" align="center">
             <v-btn small outlined width="100%" :to="'/accountsettings/' + userProfile.data().uid">프로필 수정</v-btn>
           </v-col>
+          <v-col v-else cols="12" justify="center" align="center">
+            <artistFollowBtn></artistFollowBtn>
+          </v-col>
           <!-- <v-col v-if="authorProfile ? authorProfile.data().isArtist === true ? true : false : false" cols="12" justify="center" align="center">
             <consult-btn  :userProfile="userProfile" :authorProfile="authorProfile"></consult-btn>
           </v-col> -->
 
         </v-row>
-        <v-row class="black" style="padding-top:30px;">
-          <v-col cols="12" class="black" style="padding:0px 0px 10px 0px;">
-            <backgroundView :authorProfile="authorProfile" :isAuthor="isAuthor" @renewAuthorProfile="renewAuthorProfile"></backgroundView>
-            <!-- <tab v-if="authorProfile ? authorProfile.data().isArtist === true ? true : false : false" :isAuthor="isAuthor" :authorArts="authorArts" :authorProfile="authorProfile"></tab> -->
-          </v-col>
-        </v-row>
-        <v-row align="center">
-          <v-col cols="2" style="padding:0px; font-weight:bold; font-size:13px;" align="left">
-            주   소
-          </v-col>
-          <v-col cols="7" style="padding:0px;font-weight:lighter; font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" align="center">
-            {{address}}
-          </v-col>
-          <v-col cols="3" style="padding:0px;font-weight:lighter; font-size:13px;" align="right">
-            <v-btn color="info" :href=findRoad style="padding:0px;font-size:13px;">길찾기</v-btn>
-          </v-col>
-        </v-row>
-        <v-row style="padding-top:20px;">
-          <div id="map" style="width:100%;height:300px;"></div>
-        </v-row>
-        <v-row style="padding-top:20px;">
-          <review-tab :reviewsDocsToArray="reviewToMe"></review-tab>
-        </v-row>
+        <template v-if="authorProfile ? authorProfile.data().isArtist === true ? true : false : false">
+          <v-row class="black" style="padding-top:30px;">
+            <v-col cols="12" class="black" style="padding:0px 0px 10px 0px;">
+              <backgroundView :authorProfile="authorProfile" :isAuthor="isAuthor" @renewAuthorProfile="renewAuthorProfile"></backgroundView>
+              <!-- <tab v-if="authorProfile ? authorProfile.data().isArtist === true ? true : false : false" :isAuthor="isAuthor" :authorArts="authorArts" :authorProfile="authorProfile"></tab> -->
+            </v-col>
+          </v-row>
+          <v-row align="center">
+            <v-col cols="2" style="padding:0px; font-weight:bold; font-size:13px;" align="left">
+              주   소
+            </v-col>
+            <v-col cols="7" style="padding:0px;font-weight:lighter; font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" align="center">
+              {{address}}
+            </v-col>
+            <v-col cols="3" style="padding:0px;font-weight:lighter; font-size:13px;" align="right">
+              <v-btn color="info" :href=findRoad style="padding:0px;font-size:13px;">길찾기</v-btn>
+            </v-col>
+          </v-row>
+          <v-row style="padding-top:20px;">
+            <div id="map" style="width:100%;height:300px;"></div>
+          </v-row>
+          <v-row style="padding-top:20px;">
+            <review-tab :reviewsDocsToArray="reviewToMe"></review-tab>
+          </v-row>
+        </template>
       </v-col>
       
       
@@ -206,15 +211,16 @@ export default {
     this.lat = this.authorProfile ? this.authorProfile.data().latLng ? this.authorProfile.data().latLng.lat : 37.554229748867 : 37.554229748867
     this.lng = this.authorProfile ? this.authorProfile.data().latLng ? this.authorProfile.data().latLng.lng : 126.97474860534089 : 126.97474860534089
     this.afterSetMapOptions = true
-
-    if (window.kakao && window.kakao.maps) {
-        this.initMap();
-    } else {
-        const script = document.createElement('script');
-        /* global kakao */
-        script.onload = () => kakao.maps.load(this.initMap);
-        script.src = 'http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=66e112bad6ed1c35267171235fc42344&libraries=services';
-        document.head.appendChild(script);
+    if(this.authorProfile.data().isArtist){
+      if (window.kakao && window.kakao.maps) {
+          this.initMap();
+      } else {
+          const script = document.createElement('script');
+          /* global kakao */
+          script.onload = () => kakao.maps.load(this.initMap);
+          script.src = '//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=e9daeb105d5f14b828789e6a2a50b1f4&libraries=services';
+          document.head.appendChild(script);
+      }
     }
     await bus.$emit('end:spinner')
     //  

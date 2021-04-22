@@ -49,7 +49,7 @@ export default {
         }),
         // image uploads 관련
         async customAction(file, component){
-            console.log('customAction')
+            console.log(component)
              
             await bus.$emit('start:spinner')
             this.disabled = true
@@ -86,7 +86,7 @@ export default {
             }
         },
         inputFile(newFile, oldFile){ // inputFile이 들어오고 filtering 후 실행 됨
-            console.log('inputFile')
+            console.log('inputFile_avatar')
             this.$refs.upload.active = true // inputFile이 들어오면 upload 진행 시작 --> customAction실행
         },
         async deletedAvatar(fileName, docId){

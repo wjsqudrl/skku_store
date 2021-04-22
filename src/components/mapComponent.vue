@@ -43,6 +43,7 @@
 import mapView from '../components/mapView'
 import VueDaumMap from "vue-daum-map";
 import { dbUpdate, dbQuery } from '../firebase.js';
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 export default {
     props:['authorProfile', 'disabled', 'isBtn'],
     components:{
@@ -90,7 +91,7 @@ export default {
             const script = document.createElement('script');
             /* global kakao */
             script.onload = () => kakao.maps.load(this.initMap);
-            script.src = 'http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=66e112bad6ed1c35267171235fc42344&libraries=services';
+            script.src = '//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=e9daeb105d5f14b828789e6a2a50b1f4&libraries=services';
             document.head.appendChild(script);
         }
         
@@ -160,7 +161,12 @@ export default {
         //   }, err => {
         //   })
         // },
+        ...mapActions({
+          fetchUserProfile: 'fetchUserProfile', // commons.js
+          fetchFavoritesDocsToArray: 'fetchFavoritesDocsToArray', //favorite.js
+        }),
         infoUpdate(item){
+            console.log("인포업데이트")
             this.latLng = item
             this.showDialog = false
         },
@@ -182,6 +188,8 @@ export default {
                       bounds.extend(new kakao.maps.LatLng(data.y, data.x));
                       console.log(data.y, data.x)
                       await dbUpdate('userProfiles', this.authorProfile.id, {latLng: {lat:data.y, lng:data.x} })
+                      await this.fetchUserProfile()
+                      await this.fetchFavoritesDocsToArray(this.authorProfile.uid)
                       var markerPosition  = new kakao.maps.LatLng(data.y, data.x); 
                       var marker = new kakao.maps.Marker({
                           position: markerPosition
